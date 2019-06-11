@@ -134,20 +134,19 @@ class ChatViewController: MessagesViewController { // <- MessagesViewController�
     
     
     
-    // アラートを出す関数を定義
+    // アラートを出す関数を定義 クロージャでBool値を返す
     func showAlert(message: String, handler: ((Bool) -> Void)?) {
         let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
         let yesAction: UIAlertAction = UIAlertAction(title: "OK", style: .default){ action in
             if let handler = handler {
-                handler(true)
+                handler(true) // OKを選択したらクロージャでtrueを返す
             }
         }
         let noAction: UIAlertAction = UIAlertAction(title: "キャンセル", style: .cancel){ action in
             if let handler = handler {
-                handler(false)
+                handler(false) // キャンセルを選択したらクロージャでfalseを返す
             }
         }
-        
         alert.addAction(yesAction)
         alert.addAction(noAction)
         present(alert, animated: true, completion: nil)
@@ -259,11 +258,11 @@ extension ChatViewController: MessageCellDelegate {
             
             if showAlerted {
                 // OKなら削除処理を実行
-                // タップしたメッセージをindexPathで読み込む
+                // タップしたメッセージをindexPathで読み込むインスタンス生成
                 let strKey = self.readData[indexPath.section]
-                // messageIdで識別して、データベースから削除
+                // chats/個別のmessageId/ の階層を参照し、データベースから削除
                 self.ref.child("chats/\(strKey["messageId"]!)").removeValue()
-                // 表示用のメッセージリストから削除する
+                // displayMessage()で使用しているメッセージリストからindexPathで指定したデータを削除する
                 self.messageList.remove(at: indexPath.section)
                 // リロードする
                 self.messagesCollectionView.reloadData()
