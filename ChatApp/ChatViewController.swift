@@ -260,10 +260,9 @@ extension ChatViewController: MessageCellDelegate {
                 // OKなら削除処理を実行
                 // タップしたメッセージをindexPathで読み込むインスタンス生成
                 let strKey = self.readData[indexPath.section]
-                // chats/個別のmessageId/ の階層を参照し、データベースから削除
-//                print("ここ")
-//                print(self.user.uid)
-                guard strKey["senderId"]! as! String == self.user.uid  else {return}
+                // 認証したユーザーのIDとタップしたメッセージのユーザーIDを照合し、違ったら処理を終了
+                guard strKey["senderId"]! as! String == Auth.auth().currentUser!.uid  else {return}
+                // chats/個別のmessageId/ の階層を参照し、データベースから削除.
                 self.ref.child("chats/\(strKey["messageId"]!)").removeValue()
                 // displayMessage()で使用しているメッセージリストからindexPathで指定したデータを削除する
                 self.messageList.remove(at: indexPath.section)
