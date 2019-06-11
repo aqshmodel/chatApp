@@ -254,14 +254,14 @@ extension ChatViewController: MessageCellDelegate {
     func didTapMessage(in cell: MessageCollectionViewCell) {
         print("Message tapped")
         guard let indexPath = messagesCollectionView.indexPath(for: cell) else {return}
+        // タップしたメッセージをindexPathで読み込むインスタンス生成
+        let strKey = self.readData[indexPath.section]
+        // 認証したユーザーのIDとタップしたメッセージのユーザーIDを照合し、違ったら処理を終了
+        guard strKey["senderId"]! as! String == Auth.auth().currentUser!.uid  else {return}
         showAlert(message: "このメッセージを削除しますか？", handler: {showAlerted in
             
             if showAlerted {
                 // OKなら削除処理を実行
-                // タップしたメッセージをindexPathで読み込むインスタンス生成
-                let strKey = self.readData[indexPath.section]
-                // 認証したユーザーのIDとタップしたメッセージのユーザーIDを照合し、違ったら処理を終了
-                guard strKey["senderId"]! as! String == Auth.auth().currentUser!.uid  else {return}
                 // chats/個別のmessageId/ の階層を参照し、データベースから削除.
                 self.ref.child("chats/\(strKey["messageId"]!)").removeValue()
                 // displayMessage()で使用しているメッセージリストからindexPathで指定したデータを削除する
